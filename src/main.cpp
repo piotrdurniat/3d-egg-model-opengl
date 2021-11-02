@@ -13,8 +13,29 @@
 int n = 20;
 int windowWidth = 800;
 int windowHeight = 800;
-
 static GLfloat theta[] = {0.0, 0.0, 0.0};
+int displayMode = 2; // 1 - vertices, 2 - mesh, 3 - filled triangles
+int displayColor = false;
+class Color
+{
+public:
+	int r;
+	int g;
+	int b;
+
+	Color(int r, int g, int b)
+	{
+		this->r = r;
+		this->g = g;
+		this->b = b;
+	}
+	Color()
+	{
+		r = rand() % 256;
+		g = rand() % 256;
+		b = rand() % 256;
+	}
+};
 
 class Vertex3d
 {
@@ -22,32 +43,38 @@ public:
 	float x;
 	float y;
 	float z;
+	Color *color;
 
 	Vertex3d()
 	{
 		this->x = 0.0f;
 		this->y = 0.0f;
 		this->z = 0.0f;
+		this->color = new Color();
 	}
 	Vertex3d(float x, float y, float z)
 	{
 		this->x = x;
 		this->y = y;
 		this->z = z;
+		this->color = new Color();
 	}
 };
 
 void spinEgg()
 {
-	theta[0] -= 0.5;
+
+	const float step = 0.1;
+
+	theta[0] -= step;
 	if (theta[0] > 360.0)
 		theta[0] -= 360.0;
 
-	theta[1] -= 0.5;
+	theta[1] -= step;
 	if (theta[1] > 360.0)
 		theta[1] -= 360.0;
 
-	theta[2] -= 0.5;
+	theta[2] -= step;
 	if (theta[2] > 360.0)
 		theta[2] -= 360.0;
 
@@ -105,11 +132,8 @@ void init()
 	// printVertices();
 }
 
-void displayEgg()
+void displayVertices()
 {
-
-	glRotated(30.0, 1.0, 1.0, 1.0);
-
 	glBegin(GL_POINTS);
 
 	for (int i = 0; i < n * n; ++i)
@@ -119,6 +143,90 @@ void displayEgg()
 	}
 
 	glEnd();
+}
+
+void addVertex(Vertex3d *v)
+{
+	if (displayColor)
+	{
+		glColor3ub(v->color->r, v->color->g, v->color->b);
+	}
+	else
+	{
+		glColor3ub(255, 255, 255);
+	}
+	glVertex3f(v->x, v->y, v->z);
+}
+
+void displayMesh(GLenum mode)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			// this point
+			Vertex3d *vertex1 = vertices[j * n + i];
+			// top neighbor
+			Vertex3d *vertex2 = vertices[(j + 1) * n + i];
+			// top-right neighbor
+			Vertex3d *vertex3 = vertices[(j + 1) * n + (i + 1) % n];
+			// right neighbor
+			Vertex3d *vertex4 = vertices[j * n + (i + 1) % n];
+
+			// Skip the top row
+			if (j < n - 1)
+			{
+				glBegin(mode);
+				addVertex(vertex1);
+				addVertex(vertex2);
+				addVertex(vertex3);
+				addVertex(vertex1);
+				addVertex(vertex4);
+				addVertex(vertex3);
+				glEnd();
+			}
+			else
+			// Fill the missing "ring"
+			{
+
+				// top neighbor
+				Vertex3d *vertex4 = vertices[(n - i)];
+				// top-right neighbor
+				Vertex3d *vertex5 = vertices[(n - i - 1)];
+				// right neighbor
+				Vertex3d *vertex6 = vertices[j * n + (i + 1) % n];
+
+				// line from this to top neighbor
+				glBegin(mode);
+				addVertex(vertex1);
+				addVertex(vertex4);
+				addVertex(vertex5);
+				addVertex(vertex1);
+				addVertex(vertex6);
+				addVertex(vertex5);
+				glEnd();
+			}
+		}
+	}
+}
+
+void displayEgg()
+{
+	switch (displayMode)
+	{
+	case 1:
+		displayColor = false;
+		displayVertices();
+		break;
+	case 2:
+		displayColor = false;
+		displayMesh(GL_LINE_STRIP);
+		break;
+	case 3:
+		displayColor = true;
+		displayMesh(GL_TRIANGLE_STRIP);
+		break;
+	}
 }
 
 void display(void)
@@ -152,6 +260,7 @@ void changeSize(GLsizei horizontal, GLsizei vertical)
 	AspectRatio = (GLfloat)horizontal / (GLfloat)vertical;
 
 	float displaySize = 10.0;
+	// float displaySize = 1.0;
 
 	if (horizontal <= vertical)
 		glOrtho(-displaySize, displaySize, -displaySize / AspectRatio, displaySize / AspectRatio, displaySize, -displaySize);
@@ -160,6 +269,18 @@ void changeSize(GLsizei horizontal, GLsizei vertical)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+void keys(unsigned char key, int x, int y)
+{
+	if (key == 'p')
+		displayMode = 1;
+	if (key == 'w')
+		displayMode = 2;
+	if (key == 's')
+		displayMode = 3;
+
+	display();
 }
 
 int main(int argc, char *argv[])
@@ -196,6 +317,7 @@ int main(int argc, char *argv[])
 
 	glEnable(GL_DEPTH_TEST);
 	glutIdleFunc(spinEgg);
+	glutKeyboardFunc(keys);
 
 	glutMainLoop();
 	exit(0);
