@@ -14,6 +14,8 @@ int n = 20;
 int windowWidth = 800;
 int windowHeight = 800;
 
+static GLfloat theta[] = {0.0, 0.0, 0.0};
+
 class Vertex3d
 {
 public:
@@ -35,36 +37,51 @@ public:
 	}
 };
 
+void spinEgg()
+{
+
+	theta[0] -= 0.5;
+	if (theta[0] > 360.0)
+		theta[0] -= 360.0;
+
+	theta[1] -= 0.5;
+	if (theta[1] > 360.0)
+		theta[1] -= 360.0;
+
+	theta[2] -= 0.5;
+	if (theta[2] > 360.0)
+		theta[2] -= 360.0;
+
+	glutPostRedisplay();
+}
+
 // array holding the vertices of the model
 Vertex3d **vertices;
 
-// Translate the points to form an egg shape
+// Translate the points according to a given formula to form an egg shape
 void transformVertices()
 {
-	for (int i = 0; i < n * n; i++)
+	for (int i = 0; i < n * n; ++i)
 	{
-
 		Vertex3d *vertex = vertices[i];
 		float u = vertex->x;
 		float v = vertex->y;
 
-		double pi = 2 * acos(0.0);
-
-		vertex->x = (-90.0 * pow(u, 5) + 255.0 * pow(u, 4) - 270.0 * pow(u, 3) + 180.0 * pow(u, 2) - 45.0 * u) * cos(M_PI * v);
+		vertex->x = (-90.0 * pow(u, 5) + 225.0 * pow(u, 4) - 270.0 * pow(u, 3) + 180.0 * pow(u, 2) - 45.0 * u) * cos(M_PI * v);
 		vertex->y = (160.0 * pow(u, 4) - 320.0 * pow(u, 3) + 160.0 * pow(u, 2));
 		vertex->z = (-90.0 * pow(u, 5) + 225.0 * pow(u, 4) - 270.0 * pow(u, 3) + 180.0 * pow(u, 2) - 45.0 * u) * sin(M_PI * v);
 	}
 }
 
-// Sets up a 2d plain consisting of n x n points. 0 <= x <= 1 and 0 <= y <= 1, z = 0;
+// Sets up a 2d plain consisting of n x n vertices.
+// Each coordinate (x, y, z) has a value >= 0 and <= 1.
 void setupVerticesOnPlane()
 {
-
 	vertices = new Vertex3d *[n * n];
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; ++i)
 	{
-		for (int j = 0; j < n; j++)
+		for (int j = 0; j < n; ++j)
 		{
 			int index = i + j * n;
 			vertices[index] = new Vertex3d((float)i / n, (float)j / n, 0.0f);
@@ -75,7 +92,7 @@ void setupVerticesOnPlane()
 // prints the position of all the vertices to the standard output
 void printVertices()
 {
-	for (int i = 0; i < n * n; i++)
+	for (int i = 0; i < n * n; ++i)
 	{
 		std::cout << "x: " << vertices[i]->x << ", y: " << vertices[i]->y << ", z: " << vertices[i]->z << "\n";
 	}
@@ -84,8 +101,8 @@ void printVertices()
 void init()
 {
 	setupVerticesOnPlane();
-	printVertices();
-	// transformVertices();
+	// printVertices();
+	transformVertices();
 	// printVertices();
 }
 
@@ -96,7 +113,7 @@ void displayEgg()
 
 	glBegin(GL_POINTS);
 
-	for (int i = 0; i < n * n; i++)
+	for (int i = 0; i < n * n; ++i)
 	{
 		Vertex3d *vertex = vertices[i];
 		glVertex3f(vertex->x, vertex->y, vertex->z);
@@ -131,7 +148,7 @@ void changeSize(GLsizei horizontal, GLsizei vertical)
 
 	AspectRatio = (GLfloat)horizontal / (GLfloat)vertical;
 
-	float displaySize = 1.0;
+	float displaySize = 10.0;
 
 	if (horizontal <= vertical)
 		glOrtho(-displaySize, displaySize, -displaySize / AspectRatio, displaySize / AspectRatio, displaySize, -displaySize);
