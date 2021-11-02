@@ -39,7 +39,6 @@ public:
 
 void spinEgg()
 {
-
 	theta[0] -= 0.5;
 	if (theta[0] > 360.0)
 		theta[0] -= 360.0;
@@ -127,6 +126,10 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
+	glRotatef(theta[0], 1.0, 0.0, 0.0);
+	glRotatef(theta[1], 0.0, 1.0, 0.0);
+	glRotatef(theta[2], 0.0, 0.0, 1.0);
+
 	displayEgg();
 
 	glFlush();
@@ -192,6 +195,7 @@ int main(int argc, char *argv[])
 	init();
 
 	glEnable(GL_DEPTH_TEST);
+	glutIdleFunc(spinEgg);
 
 	glutMainLoop();
 	exit(0);
