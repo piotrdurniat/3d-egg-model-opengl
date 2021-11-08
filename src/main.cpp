@@ -63,20 +63,11 @@ public:
 
 void spinEgg()
 {
-
 	const float step = 0.1;
 
 	theta[0] -= step;
-	if (theta[0] > 360.0)
-		theta[0] -= 360.0;
-
 	theta[1] -= step;
-	if (theta[1] > 360.0)
-		theta[1] -= 360.0;
-
 	theta[2] -= step;
-	if (theta[2] > 360.0)
-		theta[2] -= 360.0;
 
 	glutPostRedisplay();
 }
@@ -289,7 +280,7 @@ int main(int argc, char *argv[])
 	{
 		std::string flag = argv[i];
 
-		i++;
+		++i;
 
 		if (flag == "-n" || "--n")
 		{
