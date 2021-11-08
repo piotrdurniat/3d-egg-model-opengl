@@ -14,8 +14,15 @@ int n = 20;
 int windowWidth = 800;
 int windowHeight = 800;
 static GLfloat theta[] = {0.0, 0.0, 0.0};
-int displayMode = 2; // 1 - vertices, 2 - mesh, 3 - filled triangles
-int displayColor = false;
+enum class DisplayMode
+{
+	vertices = 1,
+	mesh = 2,
+	filledTriangles = 3
+};
+
+DisplayMode displayMode = DisplayMode::mesh;
+bool displayColor = false;
 class Color
 {
 public:
@@ -75,7 +82,7 @@ void spinEgg()
 // array holding the vertices of the model
 Vertex3d **vertices;
 
-// Translate the points according to a given formula to form an egg shape
+// Translate the vertices according to a given formula to form an egg shape
 void transformVertices()
 {
 	for (int i = 0; i < n * n; ++i)
@@ -127,6 +134,8 @@ void displayVertices()
 {
 	glBegin(GL_POINTS);
 
+	glColor3ub(255, 255, 255);
+
 	for (int i = 0; i < n * n; ++i)
 	{
 		Vertex3d *vertex = vertices[i];
@@ -155,7 +164,7 @@ void displayMesh(GLenum mode)
 	{
 		for (int j = 0; j < n; ++j)
 		{
-			// this point
+			// this vertex
 			Vertex3d *vertex1 = vertices[j * n + i];
 			// top neighbor
 			Vertex3d *vertex2 = vertices[(j + 1) * n + i];
@@ -205,15 +214,14 @@ void displayEgg()
 {
 	switch (displayMode)
 	{
-	case 1:
-		displayColor = false;
+	case DisplayMode::vertices:
 		displayVertices();
 		break;
-	case 2:
+	case DisplayMode::mesh:
 		displayColor = false;
 		displayMesh(GL_LINE_STRIP);
 		break;
-	case 3:
+	case DisplayMode::filledTriangles:
 		displayColor = true;
 		displayMesh(GL_TRIANGLE_STRIP);
 		break;
@@ -265,11 +273,11 @@ void changeSize(GLsizei horizontal, GLsizei vertical)
 void keys(unsigned char key, int x, int y)
 {
 	if (key == 'p')
-		displayMode = 1;
+		displayMode = DisplayMode::vertices;
 	if (key == 'w')
-		displayMode = 2;
+		displayMode = DisplayMode::mesh;
 	if (key == 's')
-		displayMode = 3;
+		displayMode = DisplayMode::filledTriangles;
 
 	display();
 }
