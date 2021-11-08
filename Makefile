@@ -4,6 +4,7 @@ CXX_FLAGS := -lGL -lglut
 
 BIN     := bin
 SRC     := src
+INCLUDE := include
 
 LIBRARIES   :=
 EXECUTABLE  := main
@@ -16,7 +17,7 @@ run: clean all
 	./$(BIN)/$(EXECUTABLE)
 
 $(BIN)/$(EXECUTABLE): $(SRC)/*.cpp
-	$(CXX) $^ $(CXX_FLAGS) -o $@ $(LIBRARIES)
+	$(CXX) $^ $(CXX_FLAGS) -I${INCLUDE} -o $@ $(LIBRARIES)
 
 
 clean:
