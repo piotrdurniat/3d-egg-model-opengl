@@ -11,6 +11,7 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 #define _USE_MATH_DEFINES
+#include "DisplayMode.hpp"
 
 Egg *egg;
 
@@ -70,17 +71,17 @@ void keys(unsigned char key, int x, int y)
 {
 	if (key == 'p')
 	{
-		// egg->setDisplayMode(DisplayMode::vertices);
+		egg->setDisplayMode(DisplayMode::vertices);
 	}
 
 	else if (key == 'w')
 	{
-		// egg->setDisplayMode(DisplayMode::mesh);
+		egg->setDisplayMode(DisplayMode::mesh);
 	}
 
 	else if (key == 's')
 	{
-		// egg->setDisplayMode(DisplayMode::filledTriangles);
+		egg->setDisplayMode(DisplayMode::filledTriangles);
 	}
 
 	display();
