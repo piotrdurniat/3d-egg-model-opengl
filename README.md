@@ -1,4 +1,4 @@
-# 3D Egg model in OpenGL
+# 3D egg model in OpenGL
 
 Visualization of a 3D egg model described by parametric equations. Written in c++ using OpenGL and GLUT libraries.
 
