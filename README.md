@@ -3,28 +3,37 @@
 Visualization of a 3D egg model described by parametric equations. Written in c++ using OpenGL and GLUT libraries.
 
 
-## Generate build system and compile project:
+## Generate a native build system:
 
-### Release:
+
+### Release mode:
 
 ```sh
-cd build
+cd release
 cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
 ```
 
-### Debug:
+### Debug mode:
 
 ```sh
-cd build
+cd debug
 cmake -DCMAKE_BUILD_TYPE=Debug ..
+```
+## Compile/link the project:
+
+In `release` or `debug` directory:
+
+
+```sh
 cmake --build .
 ```
 
 ## Run:
 
+In `release` or `debug` directory:
+
 ```sh
-./build/main -n <number_of_vertices>
+./main -n <number_of_vertices>
 ```
 
 - where `number_of_vertices` is the number of vertices in the width and height of the initial mesh (before applying the parametric transformations).
